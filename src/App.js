@@ -7,7 +7,6 @@ import ComposeForm from './components/ComposeForm'
 class App extends Component {
   state = {
     messages: [],
-    allSelect: 1,
     modal: false
   }
 
@@ -30,7 +29,7 @@ class App extends Component {
     this.setState({messages: [...this.state.messages, message]})
   }
 
-    async patchMessage(input) {
+  async patchMessage(input) {
     const response = await fetch('http://localhost:8082/api/messages', {
       method: 'PATCH',
       body: JSON.stringify(input),
@@ -40,88 +39,66 @@ class App extends Component {
       }
     })
     const message = await response.json()
-    this.setState({messages: [...this.state.messages, message]})
+    console.log('patched message return')
+    console.log(message)
+    this.setState({messages: message})
   }
 
-
-
-
-
-
   _starOneMessage = (id) => {
-    this.setState(({messages}) => {
-      let newState = messages.map((message) => message.id === id ? {...message, starred: !message.starred } : message)
-      return {messages: newState}  
-    })
+    this.patchMessage({messageIds: [id], command: 'star'})
   }
 
   _selectOneMessage = (id) => {
-    this.setState(({messages, allSelect}) => {
-      allSelect = 1
-      let newState = messages.map((message) => message.id === id ? {...message, selected: !message.selected } : message)
-      return {messages: newState , allSelect}  
-    })
-  }
-
-  _readOneMessage = (id) => {
     this.setState(({messages}) => {
-      let newState = messages.map((message) => message.id === id ? {...message, read: true } : message)
+      let newState = messages.map((message) => message.id === id ? {...message, selected: !message.selected } : message)
       return {messages: newState}  
     })
   }
 
+  //ToolBarFunctions
   _markAsSelected = () => {
-    this.setState(({messages, allSelect}) => {
-      let newState;
-      if(allSelect === 1 || allSelect === 2){
-        allSelect = 0
-        newState = messages.map((message) => message.selected ? {...message, selected: false} : message)
-      } else if(allSelect === 0){
-        allSelect = 2
-        newState = messages.map((message) => !message.selected ? { ...message, selected: true} : message)
-      }      
-      return {messages: newState , allSelect}  
+    this.setState(({messages}) => {
+      let selectedStatus = messages.filter((message) => message.selected).length
+      let selectAll = messages.map((message) => message.selected ? message : {...message, selected: true} )
+      let UnselectAll = messages.map((message) => !message.selected ? message : {...message, selected: false} )
+      let newState = selectedStatus === messages.length ? UnselectAll : selectAll
+      return {messages: newState}  
     })
   } 
 
   _markAsRead = () => {
-    this.setState(({messages}) => {
-      let newState = messages.map((message) => message.selected ? {...message, read: true} : message)
-      return {messages: newState}  
-    })
+    let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id )    
+    this.patchMessage({messageIds: Ids, command: 'read', read : true })
   }
 
   _markAsUnread = () => {
-    this.setState(({messages}) => {
-      let newState = messages.map((message) => message.selected ? {...message, read: false } : message)
-      return {messages: newState}  
-    })
+    let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id )
+    this.patchMessage({messageIds: Ids, command: 'read', read : false })
   }
   
   _applyLabel = (e) => {
-    console.log(e.target.value)
     let newLabel = e.target.value
-    this.setState(({messages}) => {
-      let newState = messages.map((message) => message.selected && !message.labels.includes(newLabel) ? {...message, labels: [...message.labels, newLabel]} : message)
-      return {messages: newState}  
-    })
+    let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id)
+    console.log(Ids)
+    this.patchMessage({messageIds: Ids, command: 'addLabel', label: newLabel})
+
+    // this.setState(({messages}) => {
+    //   let newState = messages.map((message) => message.selected && !message.labels.includes(newLabel) ? {...message, labels: [...message.labels, newLabel]} : message)
+    //   return {messages: newState}  
+    // })
   }
 
   _removeLabel = (e) => {
-    console.log(e.target.value)
     let newLabel = e.target.value
-    this.setState(({messages}) => {
-      let newState = messages.map((message) => 
-      message.selected && message.labels.includes(newLabel) ? {...message, labels: message.labels.filter(label => label !== newLabel)} : message)
-      return {messages: newState}  
+    let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id)
+    console.log(Ids)
+    this.patchMessage({messageIds: Ids, command: 'removeLabel', label: newLabel
     })
   }
 
   _trashMessage = () => {
-    this.setState(({messages}) => {
-      let newState = messages.filter(message => !message.selected)
-      return {messages: newState}  
-    })
+        let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id)
+        this.patchMessage({messageIds: Ids, command: 'delete'})
   }
 
   _toggleComposeForm = () => {
@@ -130,14 +107,6 @@ class App extends Component {
     });
   }
 
-  _handleChange = (target) => {
-    console.log(target.name)
-    console.log(target.value)
-  }
-
-  _handleSubmit = () => {
-    console.log('submit')
-  }
   render() {
     return (
       <>
@@ -149,9 +118,9 @@ class App extends Component {
         _removeLabel={this._removeLabel}
         _trashMessage={this._trashMessage}
         _toggleComposeForm={this._toggleComposeForm}
-        appState={this.state}
+        messages={this.state.messages}
       />
-        <Collapse isOpen={this.state.modal} toggle={this._toggleComposeForm}>
+        <Collapse isOpen={this.state.modal}>
           <ComposeForm createMessage={this.createMessage}/>
         </Collapse>
 

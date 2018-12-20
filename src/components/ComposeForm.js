@@ -8,13 +8,13 @@ class ComposeForm extends Component {
 
   _handleChange = (e) => {
     const {target} = e
-        this.setState((currentState) => {
+        this.setState(() => {
       return {[target.name]: target.value}
     })
-
   }
 
-  _handleSubmit = () => {
+  _handleSubmit = (e) => {
+    e.preventDefault()
     this.props.createMessage(this.state)
   }
 
@@ -27,13 +27,13 @@ class ComposeForm extends Component {
         </div>
       </div>
       <div className="form-group">
-        <label for="subject" className="col-sm-2 control-label">Subject</label>
+        <label htmlFor="subject" className="col-sm-2 control-label">Subject</label>
         <div className="col-sm-8">
           <input type="text" className="form-control" id="subject" placeholder="Enter a subject" name="subject" onChange={this._handleChange}/>
         </div>
       </div>
       <div className="form-group">
-        <label for="body" className="col-sm-2 control-label">Body</label>
+        <label htmlFor="body" className="col-sm-2 control-label">Body</label>
         <div className="col-sm-8">
           <textarea name="body" id="body" className="form-control" onChange={this._handleChange}></textarea>
         </div>

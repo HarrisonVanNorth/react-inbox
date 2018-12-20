@@ -1,14 +1,18 @@
 import React from 'react';
 
-const Toolbar = ({appState, _toggleComposeForm, _markAsSelected, _markAsRead, _markAsUnread, _applyLabel, _removeLabel, _trashMessage}) => {
+const Toolbar = ({messages, _toggleComposeForm, _markAsSelected, _markAsRead, _markAsUnread, _applyLabel, _removeLabel, _trashMessage}) => {
 
+  console.log(messages)
 
-  let TotalUnread = appState.messages.map(message => !message.read ? 1 : 0 ).reduce(((acc, cv) => acc + cv),0)
+  let TotalUnread = messages.map(message => !message.read ? 1 : 0 ).reduce(((acc, cv) => acc + cv),0)
   let disableOne;
 
-  if(appState.allSelect === 0){
-    disableOne = 'disabled'
-  }
+  // if( === 0){
+  //   disableOne = 'disabled'
+  // }
+
+  let selectStatus = messages.filter((message) => message.selected).length
+  selectStatus = selectStatus === messages.length ? 'fa-square' : selectStatus === 0 ? 'fa-square-o' : 'fa-minus-square-o'
 
   return (
     <div className="row toolbar">
@@ -23,7 +27,7 @@ const Toolbar = ({appState, _toggleComposeForm, _markAsSelected, _markAsRead, _m
     </a>
 
     <button className="btn btn-default" onClick={_markAsSelected}>
-      < i className = {`fa ${appState.allSelect === 0 ? 'fa-square-o' : appState.allSelect === 1 ? 'fa-minus-square-o' : 'fa-square'}`}></i>
+      < i className = {`fa ${selectStatus}`}></i>
     </button>
 
     <button className="btn btn-default" onClick={_markAsRead} disabled={disableOne}>
