@@ -7,12 +7,13 @@ const Toolbar = ({messages, _toggleComposeForm, _markAsSelected, _markAsRead, _m
   let TotalUnread = messages.map(message => !message.read ? 1 : 0 ).reduce(((acc, cv) => acc + cv),0)
   let disableOne;
 
-  // if( === 0){
-  //   disableOne = 'disabled'
-  // }
-
+  
   let selectStatus = messages.filter((message) => message.selected).length
-  selectStatus = selectStatus === messages.length ? 'fa-square' : selectStatus === 0 ? 'fa-square-o' : 'fa-minus-square-o'
+  if( selectStatus.length === 0){
+    disableOne = 'disabled'
+  }
+
+  selectStatus = selectStatus === messages.length ? 'fa-square-checked-o' : selectStatus === 0 ? 'fa-square-o' : 'fa-minus-square-o'
 
   return (
     <div className="row toolbar">
