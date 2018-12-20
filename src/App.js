@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, ModalBody} from 'reactstrap'
+import {Collapse} from 'reactstrap'
 import './App.css';
 import Toolbar from './components/Toolbar'
 import MessageList from './components/MessageList'
@@ -16,6 +16,37 @@ class App extends Component {
     const json = await res.json()
     this.setState({messages: json})
   }
+
+  async createMessage(input) {
+    const response = await fetch('http://localhost:8082/api/messages', {
+      method: 'POST',
+      body: JSON.stringify(input),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+    const message = await response.json()
+    this.setState({messages: [...this.state.messages, message]})
+  }
+
+    async patchMessage(input) {
+    const response = await fetch('http://localhost:8082/api/messages', {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+    const message = await response.json()
+    this.setState({messages: [...this.state.messages, message]})
+  }
+
+
+
+
+
 
   _starOneMessage = (id) => {
     this.setState(({messages}) => {
@@ -99,6 +130,14 @@ class App extends Component {
     });
   }
 
+  _handleChange = (target) => {
+    console.log(target.name)
+    console.log(target.value)
+  }
+
+  _handleSubmit = () => {
+    console.log('submit')
+  }
   render() {
     return (
       <>
@@ -112,10 +151,9 @@ class App extends Component {
         _toggleComposeForm={this._toggleComposeForm}
         appState={this.state}
       />
-        <Modal isOpen={this.state.modal} toggle={this._toggleComposeForm} centered={true} backdrop={true} size={'lg'}>
-          Hello
-          <ComposeForm/>
-        </Modal>
+        <Collapse isOpen={this.state.modal} toggle={this._toggleComposeForm}>
+          <ComposeForm createMessage={this.createMessage}/>
+        </Collapse>
 
       <MessageList 
         messages={this.state.messages} 
