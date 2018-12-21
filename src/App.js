@@ -16,7 +16,7 @@ class App extends Component {
     this.setState({messages: json})
   }
 
-  async createMessage(input) {
+  createMessage = async (input) => {
     const response = await fetch('http://localhost:8082/api/messages', {
       method: 'POST',
       body: JSON.stringify(input),
@@ -26,7 +26,7 @@ class App extends Component {
       }
     })
     const message = await response.json()
-    this.setState({messages: [...this.state.messages, message]})
+    this.setState({messages: [...this.state.messages, message], modal: false})
   }
 
   async patchMessage(input) {
@@ -39,8 +39,6 @@ class App extends Component {
       }
     })
     const message = await response.json()
-    console.log('patched message return')
-    console.log(message)
     this.setState({messages: message})
   }
 
@@ -81,11 +79,6 @@ class App extends Component {
     let Ids = this.state.messages.filter((message) => message.selected).map((message) => message.id)
     console.log(Ids)
     this.patchMessage({messageIds: Ids, command: 'addLabel', label: newLabel})
-
-    // this.setState(({messages}) => {
-    //   let newState = messages.map((message) => message.selected && !message.labels.includes(newLabel) ? {...message, labels: [...message.labels, newLabel]} : message)
-    //   return {messages: newState}  
-    // })
   }
 
   _removeLabel = (e) => {

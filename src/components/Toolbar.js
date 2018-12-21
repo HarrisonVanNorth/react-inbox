@@ -13,7 +13,7 @@ const Toolbar = ({messages, _toggleComposeForm, _markAsSelected, _markAsRead, _m
     disableOne = 'disabled'
   }
 
-  selectStatus = selectStatus === messages.length ? 'fa-square-checked-o' : selectStatus === 0 ? 'fa-square-o' : 'fa-minus-square-o'
+  selectStatus = selectStatus === messages.length ? 'fa-check-square-o' : selectStatus === 0 ? 'fa-square-o' : 'fa-minus-square-o'
 
   return (
     <div className="row toolbar">

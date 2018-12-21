@@ -21,7 +21,7 @@ class Message extends Component {
   
   render(){
     const {message} = this.props  
-    let Labels = message.labels.map(label => <span className='label label-warning'>{label}</span>)
+    let Labels = message.labels.map(label => <span key={message.id} className='label label-warning'>{label}</span>)
     return (
       <>
         <div className={`row message ${message.read ? 'read' : 'unread'} ${message.selected ? 'selected' : ''}`}>
